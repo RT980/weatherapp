@@ -1,128 +1,133 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react';
+import { Droplets, Wind, Search } from 'lucide-react'; // You need lucide-react installed
 
-import './Weather.css'
 import search_icon from '../assets/search 1.png';
 import clear_icon from '../assets/clear.png';
 import cloud_icon from '../assets/cloud.png';
 import drizzle_icon from '../assets/drizzle.png';
 import rain_icon from '../assets/rain.png';
 import snow_icon from '../assets/snow.png';
-import humidity_icon from '../assets/humidity.png';
-import wind_icon from '../assets/wind.webp';
 
 const Weather = () => {
-
-  const inputRef= useRef()
+  const inputRef = useRef();
   const [weatherData, setWeatherData] = useState({
     humidity: '',
     windSpeed: '',
-    temprature: '',
+    temperature: '',
     location: '',
     icon: clear_icon,
   });
-  const [city, setCity] = useState('');
 
   const allIcons = {
     "01d": clear_icon,
     "01n": clear_icon,
-    "02d":cloud_icon,
-    "02n":cloud_icon,
-    "03d":clear_icon,
-    "03n":clear_icon,
-    "04d":drizzle_icon,
-    "04n":drizzle_icon,
-    "09d":rain_icon,
-    "09n":rain_icon,
-    "010d":rain_icon,
-    "010n":rain_icon,
-    "013d":snow_icon,
-    "013n":snow_icon
-
-  }
+    "02d": cloud_icon,
+    "02n": cloud_icon,
+    "03d": clear_icon,
+    "03n": clear_icon,
+    "04d": drizzle_icon,
+    "04n": drizzle_icon,
+    "09d": rain_icon,
+    "09n": rain_icon,
+    "10d": rain_icon,
+    "10n": rain_icon,
+    "13d": snow_icon,
+    "13n": snow_icon
+  };
 
   const search = async (cityName) => {
-    if (cityName ===""){
-      alert("enter your city name");
+    if (cityName === "") {
+      alert("Enter your city name");
       return;
-
     }
-   
+
     try {
       const url = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&units=metric&appid=27e7033873c40716389da99df5206dd9`;
       const response = await fetch(url);
       const data = await response.json();
-      if(!response.ok){
+
+      if (!response.ok) {
         alert(data.message);
         return;
       }
-
-      console.log(data);
 
       const icon = allIcons[data.weather[0].icon] || clear_icon;
 
       setWeatherData({
         humidity: data.main.humidity,
         windSpeed: data.wind.speed,
-        temprature: Math.floor(data.main.temp),
+        temperature: Math.floor(data.main.temp),
         location: data.name,
         icon: icon
-      })
-
-    } catch (error)
-    {
-      setWeatherData(false);
-      console.error("error")
+      });
+    } catch (error) {
+      console.error("Error fetching weather data:", error);
     }
-  }
+  };
 
   useEffect(() => {
     search("London");
-  }, [])
+  }, []);
+
+  const handleSearch = () => {
+    const city = inputRef.current.value;
+    search(city);
+  };
+
+  const { temperature, humidity, windSpeed, location, icon } = weatherData;
 
   return (
-    <div className='weather'>
-      <div className="search-bar">
-        <input 
-          type="text" 
-          ref={inputRef}
-          placeholder='Search' 
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-        />
-        <img 
-          className='image' 
-          src={search_icon} 
-          alt="" 
-          onClick={() => search(inputRef.current.value)}
-        />
+    <div className="flex flex-col items-center min-h-screen bg-indigo-800 text-white p-4">
+      {/* Search Bar */}
+      <div className="w-full max-w-md flex items-center gap-2 mb-8 mt-4">
+        <div className="flex-1 relative rounded-full bg-white/90">
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder="Search"
+            className="w-full py-3 px-6 rounded-full text-gray-700 focus:outline-none"
+          />
+        </div>
+        <button onClick={handleSearch} className="bg-white p-3 rounded-full">
+          <Search className="h-5 w-5 text-indigo-800" />
+        </button>
       </div>
-      {weatherData ?<>
-        <img src={weatherData.icon} alt="" className='weather-icon' />
-      <p className='temprature'>{weatherData.temprature}°c </p>
-      <p className='location'>{weatherData.location}</p>
-      <div className='weather-data'>
-        <div className='col'>
-          <img src={humidity_icon} alt="" className='img1' />
+
+      {/* Weather Icon */}
+      <div className="my-6">
+        <img src={icon} alt="weather icon" className="w-32 h-32" />
+      </div>
+
+      {/* Temperature and Location */}
+      <div className="flex flex-col items-center my-6">
+        <h1 className="text-8xl font-light mb-2">{temperature}°C</h1>
+        <h2 className="text-4xl font-light">{location}</h2>
+      </div>
+
+      {/* Weather Details */}
+      <div className="w-full max-w-md flex justify-between mt-8 mb-6 px-6">
+        <div className="flex items-center gap-3">
+          <div className="text-blue-200">
+            <Droplets size={36} />
+          </div>
           <div>
-            <p>{weatherData.humidity}%</p>
-            <span>humidity</span>
+            <p className="text-3xl font-light">{humidity}%</p>
+            <p className="text-xl text-blue-100">Humidity</p>
           </div>
         </div>
-        <div className='col'>
-          <img src={wind_icon} alt="" className='img2' />
+
+        <div className="flex items-center gap-3">
+          <div className="text-blue-200">
+            <Wind size={36} />
+          </div>
           <div>
-            <p>{weatherData.windSpeed} km/h</p>
-            <span>wind speed</span>
+            <p className="text-3xl font-light">{windSpeed} km/h</p>
+            <p className="text-xl text-blue-100">Wind Speed</p>
           </div>
         </div>
       </div>
-      
-      </>:<>
-      
-      </>}
-     
     </div>
-  )
-}
+  );
+};
 
 export default Weather;
