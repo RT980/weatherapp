@@ -76,3 +76,42 @@
     gap: 20px;
     font-size: 22px;
 }
+@media (max-width: 768px) {
+    .weather {
+        padding: 20px;
+    }
+
+    .search-bar {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .search-bar input {
+        width: 100%;
+        padding-left: 15px;
+    }
+
+    .search-bar img {
+        width: 45px;
+        height: 45px;
+        padding: 10px;
+    }
+
+    .temprature {
+        font-size: 45px;
+    }
+
+    .location {
+        font-size: 20px;
+    }
+
+    .weather-data {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .weather-data .col {
+        justify-content: center;
+        text-align: center;
+    }
+}
